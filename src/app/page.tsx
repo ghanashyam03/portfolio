@@ -31,8 +31,8 @@ export default function Home() {
   return (
     <div className="w-full flex flex-col items-center">
       {/* SECTION 1: HERO SECTION */}
-      <section className="relative min-h-screen w-full max-w-7xl mx-auto px-6 sm:px-12 flex flex-col justify-between pt-28 pb-12">
-        <div className="my-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+      <section className="relative min-h-screen w-full max-w-7xl mx-auto px-6 sm:px-12 flex flex-col justify-between pt-32 pb-12">
+        <div className="my-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
           {/* Hero Left Content */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -40,14 +40,14 @@ export default function Home() {
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
             className="lg:col-span-7 flex flex-col items-start z-10"
           >
-            {/* Eyebrow Badge */}
-            <div className="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-[2px] bg-[#070913]/80 border border-[#22D3EE]/30 text-[#22D3EE] font-mono text-xs tracking-[0.2em] uppercase mb-6 shadow-[0_0_15px_rgba(34,211,238,0.15)]">
+            {/* Eyebrow Telemetry Badge */}
+            <div className="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-[2px] bg-[#070913]/90 border border-[#22D3EE]/30 text-[#22D3EE] font-mono text-xs tracking-[0.2em] uppercase mb-6 shadow-[0_0_15px_rgba(34,211,238,0.15)]">
               <span className="w-2 h-2 rounded-full bg-[#22D3EE] animate-pulse" />
               AI/ML ENGINEER · COMPUTATIONAL ASTROPHYSICS
             </div>
 
             {/* Display H1 */}
-            <h1 className="font-space font-bold tracking-tight leading-[1.04] text-[clamp(2.75rem,6.5vw,5.5rem)] mb-6 text-[#F5F7FF]">
+            <h1 className="font-space font-bold tracking-tight leading-[1.05] text-[clamp(2.5rem,5.5vw,5rem)] mb-6 text-[#F5F7FF]">
               Ghanashyam V{' '}
               <span className="bg-gradient-to-r from-[#22D3EE] via-[#818CF8] to-[#FB923C] bg-clip-text text-transparent">
                 Narayan
@@ -55,7 +55,7 @@ export default function Home() {
             </h1>
 
             {/* Subhead */}
-            <p className="font-inter text-[#94A3B8] text-base sm:text-lg leading-relaxed max-w-[620px] mb-8">
+            <p className="font-inter text-[#94A3B8] text-base sm:text-lg leading-relaxed max-w-[600px] mb-8 bg-[#020305]/40 backdrop-blur-sm p-2 rounded-[2px]">
               I build agentic AI systems and physics-constrained ML pipelines —
               from production backends to spacecraft trajectory optimization.
               Currently exploring the intersection of machine learning and
@@ -66,28 +66,27 @@ export default function Home() {
             <div className="flex flex-wrap items-center gap-4">
               <Link
                 href="/projects"
-                className="px-6 py-3.5 bg-[#FB923C] text-[#030407] font-space font-bold text-xs tracking-widest uppercase rounded-[2px] border-hud hover:bg-[#FB923C]/90 hover:shadow-[0_0_25px_rgba(251,146,60,0.5)] transition-all duration-300 flex items-center gap-2"
+                className="px-6 py-3.5 bg-[#FB923C] text-[#020305] font-space font-bold text-xs tracking-widest uppercase rounded-[2px] border-hud hover:bg-[#FB923C]/90 hover:shadow-[0_0_25px_rgba(251,146,60,0.5)] transition-all duration-300 flex items-center gap-2"
               >
                 View Projects
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <Link
                 href="/contact"
-                className="px-6 py-3.5 bg-[#070913]/70 text-[#F5F7FF] font-space font-semibold text-xs tracking-widest uppercase rounded-[2px] border border-[rgba(255,255,255,0.12)] hover:border-[#22D3EE] hover:text-[#22D3EE] hover:bg-[#070913] transition-all duration-300"
+                className="px-6 py-3.5 bg-[#070913]/80 text-[#F5F7FF] font-space font-semibold text-xs tracking-widest uppercase rounded-[2px] border border-[rgba(255,255,255,0.12)] hover:border-[#22D3EE] hover:text-[#22D3EE] hover:bg-[#070913] transition-all duration-300"
               >
                 Get in Touch
               </Link>
             </div>
           </motion.div>
 
-          {/* Hero Right 3D Centerpiece */}
+          {/* Hero Right 3D Orbit Centerpiece */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="lg:col-span-5 w-full flex justify-center items-center relative"
+            className="lg:col-span-5 w-full flex justify-center items-center relative overflow-visible"
           >
-            <div className="absolute inset-0 bg-gradient-to-tr from-[#7C3AED]/20 to-[#22D3EE]/20 rounded-full blur-3xl pointer-events-none" />
             <HeroOrbitWrapper />
           </motion.div>
         </div>
@@ -107,7 +106,7 @@ export default function Home() {
       </section>
 
       {/* SECTION 2: CURRENTLY STRIP */}
-      <section className="w-full border-y border-[rgba(255,255,255,0.08)] bg-[#070913]/60 backdrop-blur-xl py-10 px-6 sm:px-12">
+      <section className="w-full border-y border-[rgba(255,255,255,0.08)] bg-[#070913]/70 backdrop-blur-xl py-10 px-6 sm:px-12">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

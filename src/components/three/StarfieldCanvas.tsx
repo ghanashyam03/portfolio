@@ -5,7 +5,7 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useUIStore } from '@/store/useUIStore';
 
-function DeepSpaceStarfield({ count = 7000 }: { count?: number }) {
+function DeepSpaceStarfield({ count = 8000 }: { count?: number }) {
   const pointsRef = useRef<THREE.Points>(null);
   const materialRef = useRef<THREE.ShaderMaterial>(null);
   const isWarping = useUIStore((state) => state.isWarping);
@@ -22,7 +22,7 @@ function DeepSpaceStarfield({ count = 7000 }: { count?: number }) {
       new THREE.Color('#F5F7FF'), // Starlight white
       new THREE.Color('#22D3EE'), // Plasma cyan
       new THREE.Color('#FCD34D'), // Solar gold
-      new THREE.Color('#A855F7'), // Deep violet
+      new THREE.Color('#818CF8'), // Deep indigo
     ];
 
     for (let i = 0; i < count; i++) {
@@ -30,18 +30,17 @@ function DeepSpaceStarfield({ count = 7000 }: { count?: number }) {
       const v = Math.random();
       const theta = u * 2.0 * Math.PI;
       const phi = Math.acos(2.0 * v - 1.0);
-      const r = 18 + Math.random() * 40;
+      const r = 20 + Math.random() * 45;
 
       pos[i * 3] = r * Math.sin(phi) * Math.cos(theta);
       pos[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
       pos[i * 3 + 2] = r * Math.cos(phi);
 
       sds[i] = Math.random() * 100.0;
-      szs[i] = 0.8 + Math.random() * 2.2;
+      szs[i] = 0.5 + Math.random() * 1.5;
 
-      // Select spectral color randomly weighted toward white/cyan
       const colorIndex =
-        Math.random() < 0.6
+        Math.random() < 0.65
           ? 0
           : Math.random() < 0.85
           ? 1
@@ -75,16 +74,19 @@ function DeepSpaceStarfield({ count = 7000 }: { count?: number }) {
 
     void main() {
       vec3 pos = position;
-      pos.z += uWarp * (sin(aSeed) * 4.0);
+      pos.z += uWarp * (sin(aSeed) * 3.0);
       
       vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
       gl_Position = projectionMatrix * mvPosition;
       
       float twinkle = sin(uTime * 1.2 + aSeed) * 0.5 + 0.5;
-      float baseSize = aSize * (0.75 + 0.5 * twinkle);
+      float baseSize = aSize * (0.8 + 0.4 * twinkle);
       
-      gl_PointSize = (baseSize + uWarp * 2.5) * (280.0 / -mvPosition.z);
-      vAlpha = 0.4 + 0.6 * twinkle;
+      // Fine pinpoint star scaling
+      float calculatedSize = (baseSize + uWarp * 1.5) * (140.0 / -mvPosition.z);
+      gl_PointSize = clamp(calculatedSize, 0.8, 3.2);
+      
+      vAlpha = 0.35 + 0.65 * twinkle;
       vColor = aColor;
     }
   `;
@@ -97,7 +99,7 @@ function DeepSpaceStarfield({ count = 7000 }: { count?: number }) {
       float dist = length(gl_PointCoord - vec2(0.5));
       if (dist > 0.5) discard;
       
-      float alpha = (1.0 - smoothstep(0.05, 0.5, dist)) * vAlpha;
+      float alpha = (1.0 - smoothstep(0.02, 0.5, dist)) * vAlpha;
       gl_FragColor = vec4(vColor, alpha);
     }
   `;
@@ -161,30 +163,30 @@ function SceneContent() {
 
   useFrame((_, delta) => {
     const m = mouseRef.current;
-    m.x += (m.targetX - m.x) * delta * 2.0;
-    m.y += (m.targetY - m.y) * delta * 2.0;
+    m.x += (m.targetX - m.x) * delta * 1.8;
+    m.y += (m.targetY - m.y) * delta * 1.8;
 
     if (groupRef.current) {
-      groupRef.current.rotation.y = m.x * 0.05;
-      groupRef.current.rotation.x = -m.y * 0.05;
+      groupRef.current.rotation.y = m.x * 0.04;
+      groupRef.current.rotation.x = -m.y * 0.04;
     }
   });
 
   return (
     <group ref={groupRef}>
-      <fogExp2 attach="fog" args={['#030407', 0.03]} />
-      <DeepSpaceStarfield count={7000} />
+      <fogExp2 attach="fog" args={['#020305', 0.025]} />
+      <DeepSpaceStarfield count={8000} />
     </group>
   );
 }
 
 export function StarfieldCanvas() {
   return (
-    <div className="fixed inset-0 z-0 pointer-events-none w-full h-full bg-[#030407]">
-      {/* Subtle Cosmic Ambient Glow Overlay */}
-      <div className="absolute inset-0 opacity-40 bg-[radial-gradient(circle_at_20%_30%,#1e1b4b_0%,transparent_50%),radial-gradient(circle_at_80%_70%,#4c1d95_0%,transparent_50%),radial-gradient(circle_at_50%_50%,#0891b2_0%,transparent_60%)] pointer-events-none" />
+    <div className="fixed inset-0 z-0 pointer-events-none w-full h-full bg-[#020305]">
+      {/* Subtle Cosmic Ambient Radial Glow Overlay */}
+      <div className="absolute inset-0 opacity-30 bg-[radial-gradient(circle_at_25%_35%,#1e1b4b_0%,transparent_50%),radial-gradient(circle_at_75%_65%,#311b92_0%,transparent_50%),radial-gradient(circle_at_50%_50%,#0891b2_0%,transparent_60%)] pointer-events-none" />
 
-      <React.Suspense fallback={<div className="w-full h-full bg-[#030407]" />}>
+      <React.Suspense fallback={<div className="w-full h-full bg-[#020305]" />}>
         <Canvas
           dpr={[1, 2]}
           frameloop="always"

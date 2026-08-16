@@ -1,153 +1,144 @@
 'use client';
 
-import React, { useRef, useEffect, useState } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
-import * as THREE from 'three';
-
-function OrbitRing({
-  radius,
-  tiltX,
-  tiltZ,
-  speed,
-  color,
-  planetSize,
-  isReducedMotion,
-}: {
-  radius: number;
-  tiltX: number;
-  tiltZ: number;
-  speed: number;
-  color: string;
-  planetSize: number;
-  isReducedMotion: boolean;
-}) {
-  const groupRef = useRef<THREE.Group>(null);
-  const planetRef = useRef<THREE.Mesh>(null);
-  const angleRef = useRef(Math.random() * Math.PI * 2);
-
-  useFrame((_, delta) => {
-    if (isReducedMotion) return;
-    angleRef.current += delta * speed;
-    if (planetRef.current) {
-      planetRef.current.position.x = Math.cos(angleRef.current) * radius;
-      planetRef.current.position.z = Math.sin(angleRef.current) * radius;
-    }
-    if (groupRef.current) {
-      groupRef.current.rotation.y += delta * 0.08;
-    }
-  });
-
-  return (
-    <group ref={groupRef} rotation={[tiltX, 0, tiltZ]}>
-      {/* Thin Torus Orbit Track */}
-      <mesh rotation={[Math.PI / 2, 0, 0]}>
-        <torusGeometry args={[radius, 0.025, 16, 100]} />
-        <meshBasicMaterial color={color} transparent opacity={0.3} wireframe />
-      </mesh>
-
-      {/* Orbiting Planet */}
-      <mesh ref={planetRef} position={[radius, 0, 0]}>
-        <sphereGeometry args={[planetSize, 16, 16]} />
-        <meshStandardMaterial
-          color={color}
-          emissive={color}
-          emissiveIntensity={0.8}
-          roughness={0.2}
-        />
-      </mesh>
-    </group>
-  );
-}
-
-function HeroOrbitContent() {
-  const coreRef = useRef<THREE.Mesh>(null);
-  const [isReducedMotion, setIsReducedMotion] = useState(false);
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    setIsReducedMotion(mediaQuery.matches);
-    const handler = (e: MediaQueryListEvent) => setIsReducedMotion(e.matches);
-    mediaQuery.addEventListener('change', handler);
-    return () => mediaQuery.removeEventListener('change', handler);
-  }, []);
-
-  useFrame((_, delta) => {
-    if (isReducedMotion) return;
-    if (coreRef.current) {
-      coreRef.current.rotation.y += delta * 0.25;
-      coreRef.current.rotation.x += delta * 0.1;
-    }
-  });
-
-  return (
-    <group position={[0, 0, 0]}>
-      <ambientLight intensity={0.6} />
-      <pointLight position={[0, 0, 0]} intensity={3} color="#22D3EE" />
-
-      {/* Central Glowing Emissive Core */}
-      <mesh ref={coreRef}>
-        <sphereGeometry args={[1.0, 32, 32]} />
-        <meshStandardMaterial
-          color="#22D3EE"
-          emissive="#22D3EE"
-          emissiveIntensity={1.5}
-          roughness={0.1}
-          wireframe
-        />
-      </mesh>
-
-      <mesh>
-        <sphereGeometry args={[0.85, 16, 16]} />
-        <meshBasicMaterial color="#22D3EE" transparent opacity={0.85} />
-      </mesh>
-
-      {/* Orbit Ring 1 - Cyan */}
-      <OrbitRing
-        radius={2.4}
-        tiltX={Math.PI / 6}
-        tiltZ={Math.PI / 12}
-        speed={0.7}
-        color="#22D3EE"
-        planetSize={0.2}
-        isReducedMotion={isReducedMotion}
-      />
-
-      {/* Orbit Ring 2 - Nebula Purple */}
-      <OrbitRing
-        radius={3.6}
-        tiltX={-Math.PI / 4}
-        tiltZ={Math.PI / 8}
-        speed={0.45}
-        color="#7C3AED"
-        planetSize={0.26}
-        isReducedMotion={isReducedMotion}
-      />
-
-      {/* Orbit Ring 3 - Solar Orange */}
-      <OrbitRing
-        radius={4.8}
-        tiltX={Math.PI / 3}
-        tiltZ={-Math.PI / 6}
-        speed={0.3}
-        color="#FB923C"
-        planetSize={0.24}
-        isReducedMotion={isReducedMotion}
-      />
-    </group>
-  );
-}
+import React from 'react';
+import { motion } from 'framer-motion';
 
 export function HeroOrbit() {
   return (
-    <div className="w-full h-[340px] sm:h-[440px] lg:h-[540px] relative pointer-events-none select-none flex items-center justify-center">
-      <Canvas
-        camera={{ position: [0, 0, 10], fov: 45 }}
-        dpr={[1, 2]}
-        gl={{ alpha: true, antialias: true }}
-        style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+    <div className="w-full max-w-[460px] aspect-square relative select-none pointer-events-none flex items-center justify-center mx-auto">
+      {/* Background Ambient Glow (100% Transparent Container) */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(34,211,238,0.15)_0%,rgba(124,58,237,0.1)_40%,transparent_70%)] blur-2xl" />
+
+      {/* Main SVG Vector 3D Orbital Telemetry System */}
+      <svg
+        className="w-full h-full overflow-visible relative z-10"
+        viewBox="-200 -200 400 400"
+        fill="none"
       >
-        <HeroOrbitContent />
-      </Canvas>
+        {/* Outer Orbit Ring 1 - Solar Amber (Tilted Ellipse) */}
+        <g className="origin-center">
+          <motion.ellipse
+            cx="0"
+            cy="0"
+            rx="160"
+            ry="65"
+            transform="rotate(-28)"
+            stroke="#FB923C"
+            strokeWidth="1.5"
+            strokeDasharray="4 6"
+            strokeOpacity="0.4"
+            fill="none"
+          />
+          {/* Orbiting Planet 1 */}
+          <motion.g
+            animate={{ rotate: 360 }}
+            transition={{ duration: 18, repeat: Infinity, ease: 'linear' }}
+            className="origin-center"
+          >
+            <circle
+              cx="141"
+              cy="-75"
+              r="7"
+              fill="#FB923C"
+              className="shadow-[0_0_12px_#FB923C]"
+            />
+            <circle cx="141" cy="-75" r="12" stroke="#FB923C" strokeOpacity="0.5" strokeWidth="1" fill="none" />
+          </motion.g>
+        </g>
+
+        {/* Orbit Ring 2 - Nebula Purple (Tilted Ellipse) */}
+        <g className="origin-center">
+          <ellipse
+            cx="0"
+            cy="0"
+            rx="135"
+            ry="55"
+            transform="rotate(38)"
+            stroke="#7C3AED"
+            strokeWidth="1.5"
+            strokeOpacity="0.5"
+            fill="none"
+          />
+          {/* Orbiting Planet 2 */}
+          <motion.g
+            animate={{ rotate: -360 }}
+            transition={{ duration: 14, repeat: Infinity, ease: 'linear' }}
+            className="origin-center"
+          >
+            <circle
+              cx="-106"
+              cy="83"
+              r="8"
+              fill="#7C3AED"
+              className="shadow-[0_0_12px_#7C3AED]"
+            />
+          </motion.g>
+        </g>
+
+        {/* Orbit Ring 3 - Plasma Cyan (Horizontal Ellipse) */}
+        <g className="origin-center">
+          <ellipse
+            cx="0"
+            cy="0"
+            rx="105"
+            ry="40"
+            transform="rotate(-5)"
+            stroke="#22D3EE"
+            strokeWidth="1.5"
+            strokeOpacity="0.6"
+            fill="none"
+          />
+          {/* Orbiting Planet 3 */}
+          <motion.g
+            animate={{ rotate: 360 }}
+            transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}
+            className="origin-center"
+          >
+            <circle
+              cx="104"
+              cy="-9"
+              r="6"
+              fill="#22D3EE"
+              className="shadow-[0_0_12px_#22D3EE]"
+            />
+          </motion.g>
+        </g>
+
+        {/* Central Core Sphere - Wireframe Geodesic & Core */}
+        <g className="origin-center">
+          {/* Pulsing Core Glow */}
+          <circle cx="0" cy="0" r="32" fill="#22D3EE" fillOpacity="0.15" />
+          <circle cx="0" cy="0" r="24" fill="#22D3EE" fillOpacity="0.4" />
+          <circle cx="0" cy="0" r="16" fill="#F5F7FF" className="shadow-[0_0_20px_#22D3EE]" />
+
+          {/* Central Geodesic Lines */}
+          <motion.circle
+            cx="0"
+            cy="0"
+            r="38"
+            stroke="#22D3EE"
+            strokeWidth="1"
+            strokeDasharray="3 3"
+            strokeOpacity="0.7"
+            animate={{ rotate: 360 }}
+            transition={{ duration: 25, repeat: Infinity, ease: 'linear' }}
+            className="origin-center"
+          />
+
+          <motion.circle
+            cx="0"
+            cy="0"
+            r="46"
+            stroke="#7C3AED"
+            strokeWidth="1"
+            strokeDasharray="2 6"
+            strokeOpacity="0.5"
+            animate={{ rotate: -360 }}
+            transition={{ duration: 35, repeat: Infinity, ease: 'linear' }}
+            className="origin-center"
+          />
+        </g>
+      </svg>
     </div>
   );
 }

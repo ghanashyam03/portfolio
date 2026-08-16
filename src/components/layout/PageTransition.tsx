@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useUIStore } from '@/store/useUIStore';
 
 interface PageTransitionProps {
   children: React.ReactNode;
@@ -11,7 +10,6 @@ interface PageTransitionProps {
 
 export function PageTransition({ children }: PageTransitionProps) {
   const pathname = usePathname();
-  const setIsWarping = useUIStore((state) => state.setIsWarping);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
   useEffect(() => {
@@ -22,47 +20,30 @@ export function PageTransition({ children }: PageTransitionProps) {
     return () => mediaQuery.removeEventListener('change', handler);
   }, []);
 
-  const handleStartTransition = () => {
-    if (!prefersReducedMotion) {
-      setIsWarping(true);
-      setTimeout(() => {
-        setIsWarping(false);
-      }, 400);
-    }
-  };
+  useEffect(() => {
+    // Immediate scroll reset on route change
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior });
+  }, [pathname]);
 
   return (
     <AnimatePresence mode="wait">
       <motion.div
         key={pathname}
-        onAnimationStart={handleStartTransition}
-        initial={
-          prefersReducedMotion
-            ? { opacity: 0 }
-            : { opacity: 0, scale: 0.995, filter: 'blur(4px)' }
-        }
+        initial={{ opacity: 0 }}
         animate={{
           opacity: 1,
-          scale: 1,
-          filter: 'blur(0px)',
           transition: {
-            duration: prefersReducedMotion ? 0.15 : 0.35,
-            ease: [0.16, 1, 0.3, 1],
+            duration: prefersReducedMotion ? 0.1 : 0.25,
+            ease: 'easeOut',
           },
         }}
-        exit={
-          prefersReducedMotion
-            ? { opacity: 0 }
-            : {
-                opacity: 0,
-                scale: 1.005,
-                filter: 'blur(4px)',
-                transition: {
-                  duration: 0.2,
-                  ease: [0.7, 0, 0.84, 0],
-                },
-              }
-        }
+        exit={{
+          opacity: 0,
+          transition: {
+            duration: 0.15,
+            ease: 'easeIn',
+          },
+        }}
         className="w-full min-h-screen"
       >
         {children}
