@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Terminal, Clock } from 'lucide-react';
+import { Menu, X, Terminal, Clock, Volume2, VolumeX } from 'lucide-react';
+import { setIsAudioMuted, getIsAudioMuted, playHudClick } from '@/utils/audio';
 
 const NAV_ITEMS = [
   { href: '/', label: 'HOME' },
@@ -18,8 +19,11 @@ export function OrbitalNav() {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
   const [timeString, setTimeString] = useState('');
+  const [isMuted, setIsMuted] = useState(true);
 
   useEffect(() => {
+    setIsMuted(getIsAudioMuted());
+
     const updateClock = () => {
       const now = new Date();
       const hours = String(now.getUTCHours()).padStart(2, '0');
@@ -33,6 +37,15 @@ export function OrbitalNav() {
     return () => clearInterval(interval);
   }, []);
 
+  const toggleSound = () => {
+    const nextState = !isMuted;
+    setIsMuted(nextState);
+    setIsAudioMuted(nextState);
+    if (!nextState) {
+      playHudClick();
+    }
+  };
+
   return (
     <nav
       aria-label="Mission Control Navigation"
@@ -41,7 +54,7 @@ export function OrbitalNav() {
       {/* Desktop Navigation Dock */}
       <div className="hidden md:flex items-center gap-1.5 p-1.5 rounded-[2px] bg-[#070913]/90 backdrop-blur-xl border border-[rgba(255,255,255,0.12)] shadow-[0_8px_32px_rgba(0,0,0,0.9)]">
         {/* System Status & UTC Clock Telemetry Pill */}
-        <div className="flex items-center gap-3 px-3.5 py-1.5 border-r border-[rgba(255,255,255,0.1)] text-[10px] font-mono text-[#22D3EE]">
+        <div className="flex items-center gap-3 px-3 py-1.5 border-r border-[rgba(255,255,255,0.1)] text-[10px] font-mono text-[#22D3EE]">
           <span className="flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-[#22D3EE] animate-pulse shadow-[0_0_8px_#22D3EE]" />
             <span className="tracking-widest uppercase font-semibold">SYS.ONLINE</span>
@@ -62,6 +75,8 @@ export function OrbitalNav() {
               <Link
                 key={item.href}
                 href={item.href}
+                onClick={playHudClick}
+                onMouseEnter={playHudClick}
                 className={`relative px-4 py-1.5 rounded-[2px] font-space text-xs font-semibold tracking-[0.15em] uppercase transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#22D3EE] ${
                   isActive
                     ? 'text-[#FB923C]'
@@ -80,6 +95,22 @@ export function OrbitalNav() {
             );
           })}
         </div>
+
+        {/* Audio HUD Toggle Pill */}
+        <div className="pl-1 border-l border-[rgba(255,255,255,0.1)]">
+          <button
+            type="button"
+            onClick={toggleSound}
+            className={`px-2.5 py-1.5 rounded-[2px] font-mono text-[10px] uppercase font-semibold transition-all flex items-center gap-1.5 ${
+              !isMuted
+                ? 'bg-[#22D3EE]/20 border border-[#22D3EE] text-[#22D3EE]'
+                : 'text-[#8B93B0] hover:text-[#F5F7FF]'
+            }`}
+          >
+            {!isMuted ? <Volume2 className="w-3 h-3" /> : <VolumeX className="w-3 h-3" />}
+            <span>{!isMuted ? 'SOUND ON' : 'SOUND OFF'}</span>
+          </button>
+        </div>
       </div>
 
       {/* Mobile Header Bar & Drawer Toggle */}
@@ -91,15 +122,25 @@ export function OrbitalNav() {
           </span>
         </div>
 
-        <button
-          type="button"
-          onClick={() => setIsOpen(!isOpen)}
-          aria-expanded={isOpen}
-          aria-label="Toggle Navigation Menu"
-          className="p-2 rounded-[2px] border-hud text-[#F5F7FF] hover:text-[#22D3EE] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#22D3EE]"
-        >
-          {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={toggleSound}
+            className="p-2 rounded-[2px] border-hud text-[#22D3EE]"
+          >
+            {!isMuted ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setIsOpen(!isOpen)}
+            aria-expanded={isOpen}
+            aria-label="Toggle Navigation Menu"
+            className="p-2 rounded-[2px] border-hud text-[#F5F7FF] hover:text-[#22D3EE] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#22D3EE]"
+          >
+            {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile Drawer Sheet */}

@@ -1,8 +1,9 @@
 'use client';
 
-import React from 'react';
-import { motion } from 'framer-motion';
-import { ExternalLink, Code2, Terminal } from 'lucide-react';
+import React, { useState } from 'react';
+import Link from 'next/link';
+import { ExternalLink, Code2, Terminal, Play, Cpu, ChevronRight } from 'lucide-react';
+import { playHudClick } from '@/utils/audio';
 
 function GithubIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -36,6 +37,8 @@ const PROJECTS = [
       'Validated end-to-end against real historical missions — Cassini, Mars Odyssey, Voyager — across a 500+ trial optimization search space.',
     ],
     github: 'https://github.com/ghanashyam03/ASTRA',
+    hasSimulator: true,
+    simulatorType: 'ASTRA',
   },
   {
     id: 'aegis',
@@ -49,6 +52,8 @@ const PROJECTS = [
       'Quantified a 2.11-2.17x Brier score degradation from selection bias and implemented IPW Platt selection-aware recalibration, showing post-hoc recalibration alone cannot fully close the gap — a live, open research problem aimed at strengthening a PhD application in computational astrophysics.',
     ],
     github: 'https://github.com/ghanashyam03/AEGIS',
+    hasSimulator: false,
+    simulatorType: null,
   },
   {
     id: 'orion',
@@ -60,6 +65,8 @@ const PROJECTS = [
       'Deployed via a real-time FastAPI inference service with automated statistical drift monitoring to flag model degradation in production.',
     ],
     github: 'https://github.com/ghanashyam03',
+    hasSimulator: true,
+    simulatorType: 'ORION',
   },
   {
     id: 'veriface',
@@ -71,6 +78,8 @@ const PROJECTS = [
       'Integrated deepfake-detection logic to flag AI-generated identity fabrications in surveillance-assisted search.',
     ],
     github: 'https://github.com/ghanashyam03',
+    hasSimulator: false,
+    simulatorType: null,
   },
   {
     id: 'nexroute',
@@ -83,6 +92,8 @@ const PROJECTS = [
       'Predicts near-term congestion and proactively reroutes vehicles before bottlenecks form, with simulated driver-assistance alerts for upcoming turns and speed suggestions.',
     ],
     github: 'https://github.com/ghanashyam03/NexRoute',
+    hasSimulator: false,
+    simulatorType: null,
   },
   {
     id: 'forwhile',
@@ -94,19 +105,25 @@ const PROJECTS = [
       'A simple language designed for kids: each body part of a character maps to a class, teaching syntax and object-oriented concepts through a fun, visual metaphor instead of abstract examples.',
     ],
     github: 'https://github.com/ghanashyam03/ForWhile',
+    hasSimulator: false,
+    simulatorType: null,
   },
 ];
 
 export default function ProjectsPage() {
+  const [activeSim, setActiveSim] = useState<string | null>(null);
+  const [astraTargetAu, setAstraTargetAu] = useState(1.8);
+  const [orionDistMeters, setOrionDistMeters] = useState(450);
+
+  const toggleSimulator = (id: string) => {
+    playHudClick();
+    setActiveSim((prev) => (prev === id ? null : id));
+  };
+
   return (
     <div className="w-full max-w-7xl mx-auto px-6 sm:px-12 pt-32 pb-24 text-[#F5F7FF]">
-      {/* Page Header */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="mb-16 border-b border-[rgba(255,255,255,0.08)] pb-8"
-      >
+      {/* Page Header - Static & 100% Visible */}
+      <div className="mb-16 border-b border-[rgba(255,255,255,0.08)] pb-8">
         <span className="font-mono text-xs text-[#22D3EE] tracking-[0.25em] uppercase block mb-3 font-semibold">
           SYSTEM://PROJECT_REPOSITORIES
         </span>
@@ -116,18 +133,14 @@ export default function ProjectsPage() {
         <p className="font-inter text-lg text-[#94A3B8] max-w-2xl">
           Selected work across ML engineering, astrodynamics, and applied research.
         </p>
-      </motion.div>
+      </div>
 
       {/* Project Cards List */}
       <div className="space-y-12">
         {PROJECTS.map((proj, idx) => (
-          <motion.div
+          <div
             key={proj.id}
             id={proj.id}
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-50px' }}
-            transition={{ duration: 0.6, delay: 0.05 * idx }}
             className="hud-panel p-8 sm:p-10 border-hud relative overflow-hidden group hover:border-[#22D3EE]/40 transition-colors"
           >
             {/* Background Index watermark */}
@@ -151,18 +164,101 @@ export default function ProjectsPage() {
                 </p>
               </div>
 
-              {/* GitHub Link Button */}
-              <a
-                href={proj.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-[#070913] hover:bg-[#22D3EE]/10 text-[#F5F7FF] hover:text-[#22D3EE] font-space text-xs tracking-wider uppercase font-semibold border-hud rounded-[2px] transition-all duration-300 self-start shrink-0"
-              >
-                <GithubIcon className="w-4 h-4 text-[#22D3EE]" />
-                View on GitHub
-                <ExternalLink className="w-3.5 h-3.5 opacity-60" />
-              </a>
+              {/* Action Buttons: GitHub & Interactive Simulator */}
+              <div className="flex flex-wrap items-center gap-3 self-start shrink-0">
+                {proj.hasSimulator && (
+                  <button
+                    type="button"
+                    onClick={() => toggleSimulator(proj.id)}
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-[#7C3AED]/20 hover:bg-[#7C3AED]/40 text-[#7C3AED] hover:text-[#F5F7FF] font-space text-xs tracking-wider uppercase font-semibold border border-[#7C3AED]/40 rounded-[2px] transition-all duration-300"
+                  >
+                    <Play className="w-3.5 h-3.5" />
+                    {activeSim === proj.id ? 'Close Demo' : 'Run Interactive Demo'}
+                  </button>
+                )}
+
+                <a
+                  href={proj.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={playHudClick}
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-[#030407] hover:bg-[#22D3EE]/10 text-[#F5F7FF] hover:text-[#22D3EE] font-space text-xs tracking-wider uppercase font-semibold border-hud rounded-[2px] transition-all duration-300"
+                >
+                  <GithubIcon className="w-4 h-4 text-[#22D3EE]" />
+                  GitHub
+                  <ExternalLink className="w-3.5 h-3.5 opacity-60" />
+                </a>
+              </div>
             </div>
+
+            {/* INTERACTIVE DEMO SIMULATOR DRAWER */}
+            {activeSim === proj.id && proj.simulatorType === 'ASTRA' && (
+              <div className="mb-8 p-6 bg-[#030407] border border-[#22D3EE]/40 rounded-[2px] space-y-4">
+                <div className="flex items-center gap-2 font-mono text-xs text-[#22D3EE]">
+                  <Cpu className="w-4 h-4" />
+                  <span className="font-semibold uppercase tracking-wider">
+                    ASTRA LAMBERT TRAJECTORY DEMO SOLVER
+                  </span>
+                </div>
+                <div>
+                  <div className="flex justify-between items-center text-xs font-mono text-[#94A3B8] mb-2">
+                    <span>TARGET APHELION DISTANCE (AU):</span>
+                    <span className="text-[#22D3EE] font-bold">{astraTargetAu} AU</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="0.5"
+                    max="5.2"
+                    step="0.1"
+                    value={astraTargetAu}
+                    onChange={(e) => setAstraTargetAu(parseFloat(e.target.value))}
+                    className="w-full h-1.5 bg-[#070913] rounded-lg appearance-none cursor-pointer accent-[#22D3EE]"
+                  />
+                </div>
+                <div className="p-3 bg-[#070913] font-mono text-xs text-[#F5F7FF] flex justify-between items-center border border-hud">
+                  <span>ESTIMATED TRAJECTORY COMPUTE SAVINGS:</span>
+                  <span className="text-[#FB923C] font-bold">
+                    {(38 + (astraTargetAu / 5.2) * 32).toFixed(1)}% COMPUTATION REDUCTION
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {activeSim === proj.id && proj.simulatorType === 'ORION' && (
+              <div className="mb-8 p-6 bg-[#030407] border border-[#7C3AED]/40 rounded-[2px] space-y-4">
+                <div className="flex items-center gap-2 font-mono text-xs text-[#7C3AED]">
+                  <Cpu className="w-4 h-4" />
+                  <span className="font-semibold uppercase tracking-wider">
+                    ORION CONJUNCTION COLLISION PROBABILITY DEMO
+                  </span>
+                </div>
+                <div>
+                  <div className="flex justify-between items-center text-xs font-mono text-[#94A3B8] mb-2">
+                    <span>CONJUNCTION MISS DISTANCE (meters):</span>
+                    <span className="text-[#7C3AED] font-bold">{orionDistMeters}m</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="20"
+                    max="2000"
+                    step="20"
+                    value={orionDistMeters}
+                    onChange={(e) => setOrionDistMeters(parseInt(e.target.value))}
+                    className="w-full h-1.5 bg-[#070913] rounded-lg appearance-none cursor-pointer accent-[#7C3AED]"
+                  />
+                </div>
+                <div className="p-3 bg-[#070913] font-mono text-xs text-[#F5F7FF] flex justify-between items-center border border-hud">
+                  <span>PREDICTED COLLISION RISK LEVEL:</span>
+                  <span className="text-[#22D3EE] font-bold">
+                    {orionDistMeters < 150
+                      ? 'HIGH RISK (MANEUVER TRIGGERED)'
+                      : orionDistMeters < 600
+                      ? 'MODERATE MONITORING'
+                      : 'NOMINAL PASS'}
+                  </span>
+                </div>
+              </div>
+            )}
 
             {/* Tech Stack Pills */}
             <div className="flex flex-wrap gap-2 mb-8">
@@ -180,20 +276,13 @@ export default function ProjectsPage() {
             {/* Detail Bullet List */}
             <ul className="space-y-3.5 font-inter text-sm sm:text-base text-[#94A3B8] leading-relaxed border-t border-[rgba(255,255,255,0.08)] pt-6">
               {proj.bullets.map((bullet, bIdx) => (
-                <motion.li
-                  key={bIdx}
-                  initial={{ opacity: 0, x: -10 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: 0.1 + bIdx * 0.08 }}
-                  className="flex items-start gap-3"
-                >
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#22D3EE] mt-2 shrink-0" />
+                <li key={bIdx} className="flex items-start gap-3">
+                  <ChevronRight className="w-4 h-4 text-[#22D3EE] shrink-0 mt-1" />
                   <span>{bullet}</span>
-                </motion.li>
+                </li>
               ))}
             </ul>
-          </motion.div>
+          </div>
         ))}
       </div>
     </div>
