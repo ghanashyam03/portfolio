@@ -8,16 +8,13 @@ export function CustomCursor() {
   const [isHovered, setIsHovered] = useState(false);
   const [isFinePointer, setIsFinePointer] = useState(false);
 
-  // Exact mouse coords (zero lag for center dot)
   const [mousePos, setMousePos] = useState({ x: -100, y: -100 });
 
-  // Spring physics for outer ring
-  const springConfig = { damping: 28, stiffness: 350, mass: 0.5 };
+  const springConfig = { damping: 32, stiffness: 400, mass: 0.4 };
   const cursorX = useSpring(-100, springConfig);
   const cursorY = useSpring(-100, springConfig);
 
   useEffect(() => {
-    // Only enable on fine pointer devices (mouse/trackpad, not touch)
     const mediaQuery = window.matchMedia('(pointer: fine)');
     setIsFinePointer(mediaQuery.matches);
 
@@ -30,7 +27,6 @@ export function CustomCursor() {
 
       if (!isVisible) setIsVisible(true);
 
-      // Check if hovering over interactive elements
       const target = e.target as HTMLElement | null;
       if (
         target &&
@@ -63,7 +59,7 @@ export function CustomCursor() {
 
   return (
     <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
-      {/* Outer Spring Ring */}
+      {/* Outer Spring Hairline Ring */}
       <motion.div
         style={{
           x: cursorX,
@@ -72,16 +68,16 @@ export function CustomCursor() {
           translateY: '-50%',
         }}
         animate={{
-          scale: isHovered ? 1.6 : 1,
+          scale: isHovered ? 1.5 : 1,
           backgroundColor: isHovered
-            ? 'rgba(34, 211, 238, 0.15)'
+            ? 'rgba(34, 211, 238, 0.12)'
             : 'rgba(34, 211, 238, 0)',
           borderColor: isHovered
             ? 'rgba(34, 211, 238, 0.8)'
-            : 'rgba(34, 211, 238, 0.5)',
+            : 'rgba(34, 211, 238, 0.4)',
         }}
-        transition={{ duration: 0.2 }}
-        className="w-6 h-6 rounded-full border border-[#22D3EE] shadow-[0_0_10px_rgba(34,211,238,0.3)]"
+        transition={{ duration: 0.15 }}
+        className="w-5 h-5 rounded-full border border-[#22D3EE] shadow-[0_0_8px_rgba(34,211,238,0.25)]"
       />
 
       {/* Center Dot (Zero Lag) */}

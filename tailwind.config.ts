@@ -9,14 +9,14 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        void: '#05060A',
-        'space-navy': '#0B0E1A',
+        void: '#030407',
+        'space-navy': '#070913',
         'nebula-purple': '#7C3AED',
-        'nebula-pink': '#C026D3',
+        'nebula-indigo': '#6366F1',
         'plasma-cyan': '#22D3EE',
         'solar-orange': '#FB923C',
         starlight: '#F5F7FF',
-        'muted-grey': '#8B93B0',
+        'muted-grey': '#94A3B8',
       },
       fontFamily: {
         space: ['var(--font-space-grotesk)', 'sans-serif'],
@@ -34,7 +34,7 @@ const config: Config = {
         '3xl': '2px',
       },
       borderColor: {
-        hud: 'rgba(255, 255, 255, 0.12)',
+        hud: 'rgba(255, 255, 255, 0.08)',
       },
     },
   },

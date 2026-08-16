@@ -1,14 +1,14 @@
 @import "tailwindcss";
 
 :root {
-  --background-void: #05060A;
-  --space-navy: #0B0E1A;
+  --background-void: #030407;
+  --space-navy: #070913;
   --nebula-purple: #7C3AED;
-  --nebula-pink: #C026D3;
+  --nebula-indigo: #6366F1;
   --plasma-cyan: #22D3EE;
   --solar-orange: #FB923C;
   --starlight-white: #F5F7FF;
-  --muted-grey: #8B93B0;
+  --muted-grey: #94A3B8;
   
   --radius-hud: 2px;
 }
@@ -17,7 +17,7 @@
   --color-void: var(--background-void);
   --color-space-navy: var(--space-navy);
   --color-nebula-purple: var(--nebula-purple);
-  --color-nebula-pink: var(--nebula-pink);
+  --color-nebula-indigo: var(--nebula-indigo);
   --color-plasma-cyan: var(--plasma-cyan);
   --color-solar-orange: var(--solar-orange);
   --color-starlight: var(--starlight-white);
@@ -31,7 +31,7 @@
 }
 
 body {
-  background-color: #05060A;
+  background-color: #030407;
   color: #F5F7FF;
   font-family: var(--font-inter-body), sans-serif;
   margin: 0;
@@ -46,24 +46,33 @@ body {
 }
 
 .border-hud {
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.hud-card {
-  background-color: rgba(11, 14, 26, 0.7);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+.hud-panel {
+  background-color: rgba(7, 9, 19, 0.75);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 2px;
 }
 
+.hud-panel-glow {
+  background-color: rgba(7, 9, 19, 0.8);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(34, 211, 238, 0.2);
+  box-shadow: 0 0 25px -5px rgba(34, 211, 238, 0.15);
+  border-radius: 2px;
+}
+
+/* Custom minimal scrollbar */
 ::-webkit-scrollbar {
   width: 5px;
 }
 ::-webkit-scrollbar-track {
-  background: #05060A;
+  background: #030407;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.15);
   border-radius: 2px;
 }
 ::-webkit-scrollbar-thumb:hover {

@@ -99,21 +99,21 @@ const PROJECTS = [
 
 export default function ProjectsPage() {
   return (
-    <div className="w-full max-w-7xl mx-auto px-6 sm:px-12 pt-32 pb-24">
+    <div className="w-full max-w-7xl mx-auto px-6 sm:px-12 pt-32 pb-24 text-[#F5F7FF]">
       {/* Page Header */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="mb-16 border-b border-[rgba(255,255,255,0.12)] pb-8"
+        className="mb-16 border-b border-[rgba(255,255,255,0.08)] pb-8"
       >
         <span className="font-mono text-xs text-[#22D3EE] tracking-[0.25em] uppercase block mb-3 font-semibold">
-          SYSTEM://PORTFOLIO_INDEX
+          SYSTEM://PROJECT_REPOSITORIES
         </span>
         <h1 className="font-space font-bold text-4xl sm:text-6xl text-[#F5F7FF] tracking-tight mb-4">
           Projects
         </h1>
-        <p className="font-inter text-lg text-[#8B93B0] max-w-2xl">
+        <p className="font-inter text-lg text-[#94A3B8] max-w-2xl">
           Selected work across ML engineering, astrodynamics, and applied research.
         </p>
       </motion.div>
@@ -128,22 +128,22 @@ export default function ProjectsPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-50px' }}
             transition={{ duration: 0.6, delay: 0.05 * idx }}
-            className="hud-card p-8 sm:p-10 border-hud relative overflow-hidden group hover:border-[#22D3EE]/40 transition-colors"
+            className="hud-panel p-8 sm:p-10 border-hud relative overflow-hidden group hover:border-[#22D3EE]/40 transition-colors"
           >
             {/* Background Index watermark */}
-            <div className="absolute top-4 right-6 font-mono text-4xl sm:text-6xl font-bold text-[#F5F7FF]/5 select-none pointer-events-none">
+            <div className="absolute top-4 right-6 font-mono text-5xl sm:text-7xl font-bold text-[#F5F7FF]/5 select-none pointer-events-none">
               0{idx + 1}
             </div>
 
             <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6 mb-6">
               <div>
-                <div className="flex items-center gap-3 mb-2">
+                <div className="flex items-center gap-2.5 mb-2.5">
                   <Terminal className="w-4 h-4 text-[#22D3EE]" />
-                  <span className="font-mono text-xs text-[#22D3EE] tracking-widest uppercase">
+                  <span className="font-mono text-xs text-[#22D3EE] tracking-widest uppercase font-semibold">
                     REPOSITORY // 0{idx + 1}
                   </span>
                 </div>
-                <h2 className="font-space font-bold text-2xl sm:text-4xl text-[#F5F7FF] mb-2">
+                <h2 className="font-space font-bold text-2xl sm:text-4xl text-[#F5F7FF] mb-2.5">
                   {proj.name}
                 </h2>
                 <p className="font-inter font-medium text-sm sm:text-base text-[#FB923C] max-w-3xl">
@@ -156,7 +156,7 @@ export default function ProjectsPage() {
                 href={proj.github}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-[#0B0E1A] hover:bg-[#22D3EE]/10 text-[#F5F7FF] hover:text-[#22D3EE] font-space text-xs tracking-wider uppercase font-semibold border-hud rounded-[2px] transition-all duration-300 self-start shrink-0"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-[#070913] hover:bg-[#22D3EE]/10 text-[#F5F7FF] hover:text-[#22D3EE] font-space text-xs tracking-wider uppercase font-semibold border-hud rounded-[2px] transition-all duration-300 self-start shrink-0"
               >
                 <GithubIcon className="w-4 h-4 text-[#22D3EE]" />
                 View on GitHub
@@ -169,7 +169,7 @@ export default function ProjectsPage() {
               {proj.tech.map((t) => (
                 <span
                   key={t}
-                  className="font-mono text-xs px-2.5 py-1 bg-[#05060A]/80 text-[#8B93B0] border border-[rgba(255,255,255,0.08)] rounded-[2px] flex items-center gap-1.5"
+                  className="font-mono text-xs px-3 py-1 bg-[#030407]/90 text-[#94A3B8] border border-[rgba(255,255,255,0.08)] rounded-[2px] flex items-center gap-1.5"
                 >
                   <Code2 className="w-3 h-3 text-[#7C3AED]" />
                   {t}
@@ -178,7 +178,7 @@ export default function ProjectsPage() {
             </div>
 
             {/* Detail Bullet List */}
-            <ul className="space-y-3 font-inter text-sm sm:text-base text-[#8B93B0] leading-relaxed border-t border-[rgba(255,255,255,0.08)] pt-6">
+            <ul className="space-y-3.5 font-inter text-sm sm:text-base text-[#94A3B8] leading-relaxed border-t border-[rgba(255,255,255,0.08)] pt-6">
               {proj.bullets.map((bullet, bIdx) => (
                 <motion.li
                   key={bIdx}
