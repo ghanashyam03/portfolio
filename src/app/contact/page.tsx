@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Mail, Phone, Send, MessageSquare } from 'lucide-react';
+import { Mail, Phone, Send, MessageSquare, Terminal, Copy, Check } from 'lucide-react';
 
 /* NOTE: If real backend form submission is desired later, wire this to Resend, Formspree, or a Next.js API route with an email provider */
 
@@ -53,6 +53,14 @@ export default function ContactPage() {
     message: '',
   });
 
+  const [copiedEmail, setCopiedEmail] = useState(false);
+
+  const handleCopyEmail = () => {
+    navigator.clipboard.writeText('ghanashyamvn@gmail.com');
+    setCopiedEmail(true);
+    setTimeout(() => setCopiedEmail(false), 2000);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const mailtoSubject = encodeURIComponent(
@@ -62,6 +70,10 @@ export default function ContactPage() {
       `Name: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`
     );
     window.location.href = `mailto:ghanashyamvn@gmail.com?subject=${mailtoSubject}&body=${mailtoBody}`;
+  };
+
+  const applyPresetSubject = (topic: string) => {
+    setFormData((prev) => ({ ...prev, subject: topic }));
   };
 
   return (
@@ -79,34 +91,44 @@ export default function ContactPage() {
         <h1 className="font-space font-bold text-4xl sm:text-6xl text-[#F5F7FF] tracking-tight mb-4">
           Get in touch
         </h1>
-        <p className="font-inter text-lg text-[#8B93B0] max-w-2xl">
+        <p className="font-inter text-lg text-[#94A3B8] max-w-2xl">
           Open to AI/ML roles, research collaboration, and conversations about
           astrodynamics or astroinformatics.
         </p>
       </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-        {/* Left Column: Direct Contact Info List */}
+        {/* Left Column: Direct Contact Info List & Terminal Command Presets */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
           className="lg:col-span-5 space-y-6"
         >
-          <div className="hud-card p-8 border-hud">
-            <h2 className="font-space font-bold text-xl text-[#F5F7FF] mb-6 uppercase tracking-wider flex items-center gap-2">
-              <MessageSquare className="w-5 h-5 text-[#22D3EE]" />
-              Direct Channels
-            </h2>
+          <div className="hud-panel p-8 border-hud">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="font-space font-bold text-xl text-[#F5F7FF] uppercase tracking-wider flex items-center gap-2">
+                <MessageSquare className="w-5 h-5 text-[#22D3EE]" />
+                Direct Channels
+              </h2>
+              <button
+                type="button"
+                onClick={handleCopyEmail}
+                className="font-mono text-[10px] text-[#22D3EE] hover:text-[#FB923C] flex items-center gap-1 uppercase transition-colors"
+              >
+                {copiedEmail ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                {copiedEmail ? 'COPIED' : 'COPY EMAIL'}
+              </button>
+            </div>
 
             <div className="space-y-6 font-inter text-sm">
               {/* Email */}
               <div className="flex items-start gap-4">
-                <div className="p-2.5 rounded-[2px] bg-[#05060A] border-hud text-[#22D3EE] shrink-0">
+                <div className="p-2.5 rounded-[2px] bg-[#030407] border-hud text-[#22D3EE] shrink-0">
                   <Mail className="w-4 h-4" />
                 </div>
                 <div>
-                  <span className="font-mono text-xs text-[#8B93B0] uppercase block mb-1">
+                  <span className="font-mono text-xs text-[#94A3B8] uppercase block mb-1">
                     EMAIL
                   </span>
                   <a
@@ -120,11 +142,11 @@ export default function ContactPage() {
 
               {/* Phone */}
               <div className="flex items-start gap-4">
-                <div className="p-2.5 rounded-[2px] bg-[#05060A] border-hud text-[#22D3EE] shrink-0">
+                <div className="p-2.5 rounded-[2px] bg-[#030407] border-hud text-[#22D3EE] shrink-0">
                   <Phone className="w-4 h-4" />
                 </div>
                 <div>
-                  <span className="font-mono text-xs text-[#8B93B0] uppercase block mb-1">
+                  <span className="font-mono text-xs text-[#94A3B8] uppercase block mb-1">
                     PHONE
                   </span>
                   <a
@@ -138,11 +160,11 @@ export default function ContactPage() {
 
               {/* LinkedIn */}
               <div className="flex items-start gap-4">
-                <div className="p-2.5 rounded-[2px] bg-[#05060A] border-hud text-[#22D3EE] shrink-0">
+                <div className="p-2.5 rounded-[2px] bg-[#030407] border-hud text-[#22D3EE] shrink-0">
                   <LinkedinIcon className="w-4 h-4" />
                 </div>
                 <div>
-                  <span className="font-mono text-xs text-[#8B93B0] uppercase block mb-1">
+                  <span className="font-mono text-xs text-[#94A3B8] uppercase block mb-1">
                     LINKEDIN
                   </span>
                   <a
@@ -158,11 +180,11 @@ export default function ContactPage() {
 
               {/* GitHub */}
               <div className="flex items-start gap-4">
-                <div className="p-2.5 rounded-[2px] bg-[#05060A] border-hud text-[#22D3EE] shrink-0">
+                <div className="p-2.5 rounded-[2px] bg-[#030407] border-hud text-[#22D3EE] shrink-0">
                   <GithubIcon className="w-4 h-4" />
                 </div>
                 <div>
-                  <span className="font-mono text-xs text-[#8B93B0] uppercase block mb-1">
+                  <span className="font-mono text-xs text-[#94A3B8] uppercase block mb-1">
                     GITHUB
                   </span>
                   <a
@@ -177,6 +199,36 @@ export default function ContactPage() {
               </div>
             </div>
           </div>
+
+          {/* INTERACTIVE PRESET TOPIC SELECTOR */}
+          <div className="hud-panel p-6 border-hud space-y-3">
+            <div className="flex items-center gap-2 font-mono text-xs text-[#22D3EE]">
+              <Terminal className="w-4 h-4" />
+              <span className="font-semibold uppercase tracking-wider">
+                QUICK INQUIRY PRESETS
+              </span>
+            </div>
+            <p className="font-inter text-xs text-[#94A3B8]">
+              Click a topic to auto-fill message subject:
+            </p>
+            <div className="flex flex-wrap gap-2 pt-1">
+              {[
+                'Computational Astrophysics Research',
+                'AI/ML Engineering Role',
+                'ASTRA / Astrodynamics Inquiry',
+                'General Discussion',
+              ].map((topic) => (
+                <button
+                  key={topic}
+                  type="button"
+                  onClick={() => applyPresetSubject(topic)}
+                  className="font-mono text-xs px-2.5 py-1 bg-[#030407] text-[#8B93B0] hover:text-[#22D3EE] hover:border-[#22D3EE]/50 border border-[rgba(255,255,255,0.08)] rounded-[2px] transition-colors text-left"
+                >
+                  &gt; {topic}
+                </button>
+              ))}
+            </div>
+          </div>
         </motion.div>
 
         {/* Right Column: HUD Contact Form */}
@@ -188,12 +240,12 @@ export default function ContactPage() {
         >
           <form
             onSubmit={handleSubmit}
-            className="hud-card p-8 sm:p-10 border-hud space-y-6"
+            className="hud-panel p-8 sm:p-10 border-hud space-y-6"
           >
             <h2 className="font-space font-bold text-xl text-[#F5F7FF] uppercase tracking-wider mb-2">
               Send Message
             </h2>
-            <p className="font-inter text-xs text-[#8B93B0] mb-6">
+            <p className="font-inter text-xs text-[#94A3B8] mb-6">
               Submitting launches your native mail client pre-filled with your message.
             </p>
 
@@ -214,7 +266,7 @@ export default function ContactPage() {
                   setFormData({ ...formData, name: e.target.value })
                 }
                 placeholder="e.g. Dr. Jane Doe"
-                className="w-full bg-[#05060A] border-hud text-[#F5F7FF] font-inter text-sm px-4 py-3 rounded-[2px] focus:outline-none focus:border-[#22D3EE] focus:ring-1 focus:ring-[#22D3EE] placeholder-[#8B93B0]/40 transition-colors"
+                className="w-full bg-[#030407] border-hud text-[#F5F7FF] font-inter text-sm px-4 py-3 rounded-[2px] focus:outline-none focus:border-[#22D3EE] focus:ring-1 focus:ring-[#22D3EE] placeholder-[#94A3B8]/40 transition-colors"
               />
             </div>
 
@@ -235,7 +287,7 @@ export default function ContactPage() {
                   setFormData({ ...formData, email: e.target.value })
                 }
                 placeholder="e.g. jane@observatory.org"
-                className="w-full bg-[#05060A] border-hud text-[#F5F7FF] font-inter text-sm px-4 py-3 rounded-[2px] focus:outline-none focus:border-[#22D3EE] focus:ring-1 focus:ring-[#22D3EE] placeholder-[#8B93B0]/40 transition-colors"
+                className="w-full bg-[#030407] border-hud text-[#F5F7FF] font-inter text-sm px-4 py-3 rounded-[2px] focus:outline-none focus:border-[#22D3EE] focus:ring-1 focus:ring-[#22D3EE] placeholder-[#94A3B8]/40 transition-colors"
               />
             </div>
 
@@ -255,7 +307,7 @@ export default function ContactPage() {
                   setFormData({ ...formData, subject: e.target.value })
                 }
                 placeholder="e.g. Computational Astrophysics Collaboration"
-                className="w-full bg-[#05060A] border-hud text-[#F5F7FF] font-inter text-sm px-4 py-3 rounded-[2px] focus:outline-none focus:border-[#22D3EE] focus:ring-1 focus:ring-[#22D3EE] placeholder-[#8B93B0]/40 transition-colors"
+                className="w-full bg-[#030407] border-hud text-[#F5F7FF] font-inter text-sm px-4 py-3 rounded-[2px] focus:outline-none focus:border-[#22D3EE] focus:ring-1 focus:ring-[#22D3EE] placeholder-[#94A3B8]/40 transition-colors"
               />
             </div>
 
@@ -276,14 +328,14 @@ export default function ContactPage() {
                   setFormData({ ...formData, message: e.target.value })
                 }
                 placeholder="Write your message here..."
-                className="w-full bg-[#05060A] border-hud text-[#F5F7FF] font-inter text-sm px-4 py-3 rounded-[2px] focus:outline-none focus:border-[#22D3EE] focus:ring-1 focus:ring-[#22D3EE] placeholder-[#8B93B0]/40 transition-colors resize-none"
+                className="w-full bg-[#030407] border-hud text-[#F5F7FF] font-inter text-sm px-4 py-3 rounded-[2px] focus:outline-none focus:border-[#22D3EE] focus:ring-1 focus:ring-[#22D3EE] placeholder-[#94A3B8]/40 transition-colors resize-none"
               />
             </div>
 
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full py-3.5 bg-[#FB923C] text-[#05060A] font-space font-bold text-xs tracking-widest uppercase rounded-[2px] border-hud hover:bg-[#FB923C]/90 hover:shadow-[0_0_20px_rgba(251,146,60,0.5)] transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#22D3EE]"
+              className="w-full py-3.5 bg-[#FB923C] text-[#030407] font-space font-bold text-xs tracking-widest uppercase rounded-[2px] border-hud hover:bg-[#FB923C]/90 hover:shadow-[0_0_20px_rgba(251,146,60,0.5)] transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#22D3EE]"
             >
               <Send className="w-4 h-4" />
               Open Email Client to Send

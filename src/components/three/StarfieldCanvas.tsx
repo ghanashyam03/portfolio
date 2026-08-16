@@ -5,13 +5,13 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useUIStore } from '@/store/useUIStore';
 
-function DeepSpaceStarfield({ count = 8000 }: { count?: number }) {
+function InteractiveStarfield({ count = 8000 }: { count?: number }) {
   const pointsRef = useRef<THREE.Points>(null);
   const materialRef = useRef<THREE.ShaderMaterial>(null);
   const isWarping = useUIStore((state) => state.isWarping);
-  const warpFactor = useRef(0);
+  const mouseRef = useRef({ x: 0, y: 0, targetX: 0, targetY: 0 });
+  const rippleRef = useRef({ time: 100, x: 0, y: 0 });
 
-  // Generate random positions, seeds, sizes, and colors
   const [positions, seeds, sizes, colors] = useMemo(() => {
     const pos = new Float32Array(count * 3);
     const sds = new Float32Array(count);
@@ -30,14 +30,14 @@ function DeepSpaceStarfield({ count = 8000 }: { count?: number }) {
       const v = Math.random();
       const theta = u * 2.0 * Math.PI;
       const phi = Math.acos(2.0 * v - 1.0);
-      const r = 20 + Math.random() * 45;
+      const r = 18 + Math.random() * 45;
 
       pos[i * 3] = r * Math.sin(phi) * Math.cos(theta);
       pos[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
       pos[i * 3 + 2] = r * Math.cos(phi);
 
       sds[i] = Math.random() * 100.0;
-      szs[i] = 0.5 + Math.random() * 1.5;
+      szs[i] = 0.6 + Math.random() * 1.5;
 
       const colorIndex =
         Math.random() < 0.65
@@ -59,6 +59,8 @@ function DeepSpaceStarfield({ count = 8000 }: { count?: number }) {
     () => ({
       uTime: { value: 0 },
       uWarp: { value: 0 },
+      uMouse: { value: new THREE.Vector2(0, 0) },
+      uRipple: { value: new THREE.Vector3(0, 0, 100) },
     }),
     []
   );
@@ -66,6 +68,8 @@ function DeepSpaceStarfield({ count = 8000 }: { count?: number }) {
   const vertexShader = `
     uniform float uTime;
     uniform float uWarp;
+    uniform vec2 uMouse;
+    uniform vec3 uRipple; // x, y, timeSinceClick
     attribute float aSeed;
     attribute float aSize;
     attribute vec3 aColor;
@@ -74,6 +78,28 @@ function DeepSpaceStarfield({ count = 8000 }: { count?: number }) {
 
     void main() {
       vec3 pos = position;
+      
+      // Mouse Proximity Displacement
+      vec2 normPos = pos.xy / 20.0;
+      float distToMouse = length(normPos - uMouse);
+      if (distToMouse < 2.5) {
+        float force = (2.5 - distToMouse) * 0.4;
+        vec2 dir = normalize(normPos - uMouse + vec2(0.001));
+        pos.xy += dir * force;
+      }
+
+      // Gravitational Wave Ripple Physics on Click
+      float rippleTime = uRipple.z;
+      if (rippleTime < 3.0) {
+        float rDist = length(pos.xy - uRipple.xy * 15.0);
+        float waveRadius = rippleTime * 12.0;
+        float waveDelta = abs(rDist - waveRadius);
+        if (waveDelta < 3.0) {
+          float waveForce = (3.0 - waveDelta) * sin(rippleTime * 10.0) * 0.3;
+          pos.z += waveForce;
+        }
+      }
+      
       pos.z += uWarp * (sin(aSeed) * 3.0);
       
       vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
@@ -82,7 +108,6 @@ function DeepSpaceStarfield({ count = 8000 }: { count?: number }) {
       float twinkle = sin(uTime * 1.2 + aSeed) * 0.5 + 0.5;
       float baseSize = aSize * (0.8 + 0.4 * twinkle);
       
-      // Fine pinpoint star scaling
       float calculatedSize = (baseSize + uWarp * 1.5) * (140.0 / -mvPosition.z);
       gl_PointSize = clamp(calculatedSize, 0.8, 3.2);
       
@@ -104,13 +129,43 @@ function DeepSpaceStarfield({ count = 8000 }: { count?: number }) {
     }
   `;
 
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      mouseRef.current.targetX = (e.clientX / window.innerWidth - 0.5) * 2;
+      mouseRef.current.targetY = -(e.clientY / window.innerHeight - 0.5) * 2;
+    };
+
+    const handleClick = (e: MouseEvent) => {
+      rippleRef.current.x = (e.clientX / window.innerWidth - 0.5) * 2;
+      rippleRef.current.y = -(e.clientY / window.innerHeight - 0.5) * 2;
+      rippleRef.current.time = 0;
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('click', handleClick);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('click', handleClick);
+    };
+  }, []);
+
   useFrame((_, delta) => {
-    const targetWarp = isWarping ? 1.0 : 0.0;
-    warpFactor.current += (targetWarp - warpFactor.current) * delta * 6.0;
+    const m = mouseRef.current;
+    m.x += (m.targetX - m.x) * delta * 4.0;
+    m.y += (m.targetY - m.y) * delta * 4.0;
+
+    rippleRef.current.time += delta;
 
     if (materialRef.current) {
-      materialRef.current.uniforms.uTime.value += delta * (1.0 + warpFactor.current * 1.5);
-      materialRef.current.uniforms.uWarp.value = warpFactor.current;
+      materialRef.current.uniforms.uTime.value += delta;
+      materialRef.current.uniforms.uWarp.value = isWarping ? 1.0 : 0.0;
+      materialRef.current.uniforms.uMouse.value.set(m.x, m.y);
+      materialRef.current.uniforms.uRipple.value.set(
+        rippleRef.current.x,
+        rippleRef.current.y,
+        rippleRef.current.time
+      );
     }
   });
 
@@ -147,6 +202,29 @@ function DeepSpaceStarfield({ count = 8000 }: { count?: number }) {
   );
 }
 
+function DistantCelestialGrid() {
+  const meshRef = useRef<THREE.Mesh>(null);
+
+  useFrame((_, delta) => {
+    if (meshRef.current) {
+      meshRef.current.rotation.y += delta * 0.02;
+      meshRef.current.rotation.x += delta * 0.005;
+    }
+  });
+
+  return (
+    <mesh ref={meshRef} position={[0, 0, -22]}>
+      <sphereGeometry args={[16, 24, 24]} />
+      <meshBasicMaterial
+        color="#7C3AED"
+        wireframe
+        transparent
+        opacity={0.06}
+      />
+    </mesh>
+  );
+}
+
 function SceneContent() {
   const groupRef = useRef<THREE.Group>(null);
   const mouseRef = useRef({ x: 0, y: 0, targetX: 0, targetY: 0 });
@@ -163,19 +241,20 @@ function SceneContent() {
 
   useFrame((_, delta) => {
     const m = mouseRef.current;
-    m.x += (m.targetX - m.x) * delta * 1.8;
-    m.y += (m.targetY - m.y) * delta * 1.8;
+    m.x += (m.targetX - m.x) * delta * 1.5;
+    m.y += (m.targetY - m.y) * delta * 1.5;
 
     if (groupRef.current) {
-      groupRef.current.rotation.y = m.x * 0.04;
-      groupRef.current.rotation.x = -m.y * 0.04;
+      groupRef.current.rotation.y = m.x * 0.03;
+      groupRef.current.rotation.x = -m.y * 0.03;
     }
   });
 
   return (
     <group ref={groupRef}>
-      <fogExp2 attach="fog" args={['#020305', 0.025]} />
-      <DeepSpaceStarfield count={8000} />
+      <fogExp2 attach="fog" args={['#020305', 0.022]} />
+      <InteractiveStarfield count={8000} />
+      <DistantCelestialGrid />
     </group>
   );
 }
@@ -183,7 +262,7 @@ function SceneContent() {
 export function StarfieldCanvas() {
   return (
     <div className="fixed inset-0 z-0 pointer-events-none w-full h-full bg-[#020305]">
-      {/* Subtle Cosmic Ambient Radial Glow Overlay */}
+      {/* Ambient Cosmic Radial Nebula Overlay */}
       <div className="absolute inset-0 opacity-30 bg-[radial-gradient(circle_at_25%_35%,#1e1b4b_0%,transparent_50%),radial-gradient(circle_at_75%_65%,#311b92_0%,transparent_50%),radial-gradient(circle_at_50%_50%,#0891b2_0%,transparent_60%)] pointer-events-none" />
 
       <React.Suspense fallback={<div className="w-full h-full bg-[#020305]" />}>

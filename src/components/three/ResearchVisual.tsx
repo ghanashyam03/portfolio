@@ -1,59 +1,65 @@
 'use client';
 
-import React, { useRef } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
-import * as THREE from 'three';
-
-function OrbitalPlane() {
-  const groupRef = useRef<THREE.Group>(null);
-
-  useFrame((_, delta) => {
-    if (groupRef.current) {
-      groupRef.current.rotation.z += delta * 0.1;
-      groupRef.current.rotation.y += delta * 0.04;
-    }
-  });
-
-  return (
-    <group ref={groupRef} rotation={[0.6, 0.2, 0]}>
-      {/* Concentric Wireframe Orbital Grid Lines */}
-      <mesh>
-        <ringGeometry args={[1.0, 3.6, 48, 8]} />
-        <meshBasicMaterial
-          color="#22D3EE"
-          wireframe
-          transparent
-          opacity={0.22}
-        />
-      </mesh>
-
-      {/* Primary Orbit Ring */}
-      <mesh>
-        <torusGeometry args={[2.6, 0.025, 16, 80]} />
-        <meshBasicMaterial color="#7C3AED" transparent opacity={0.65} />
-      </mesh>
-
-      {/* Central Star Core */}
-      <mesh>
-        <sphereGeometry args={[0.45, 16, 16]} />
-        <meshBasicMaterial color="#F5F7FF" wireframe opacity={0.75} transparent />
-      </mesh>
-    </group>
-  );
-}
+import React from 'react';
+import { motion } from 'framer-motion';
 
 export function ResearchVisual() {
   return (
-    <div className="w-full h-[220px] sm:h-[280px] relative pointer-events-none select-none my-4">
-      <Canvas
-        camera={{ position: [0, 0, 7], fov: 45 }}
-        dpr={[1, 2]}
-        gl={{ alpha: true, antialias: true }}
-        style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+    <div className="w-full max-w-2xl mx-auto h-[200px] sm:h-[240px] relative pointer-events-none select-none my-6 flex items-center justify-center">
+      {/* Background Glow */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(34,211,238,0.12)_0%,rgba(124,58,237,0.08)_50%,transparent_70%)] blur-xl" />
+
+      {/* SVG Astronomical Light-Curve Vector Statement */}
+      <svg
+        className="w-full h-full overflow-visible relative z-10"
+        viewBox="0 0 600 200"
+        fill="none"
       >
-        <ambientLight intensity={0.5} />
-        <OrbitalPlane />
-      </Canvas>
+        {/* Telemetry Grid Lines */}
+        <line x1="40" y1="20" x2="560" y2="20" stroke="rgba(255,255,255,0.06)" strokeDasharray="4 4" />
+        <line x1="40" y1="60" x2="560" y2="60" stroke="rgba(255,255,255,0.06)" strokeDasharray="4 4" />
+        <line x1="40" y1="100" x2="560" y2="100" stroke="rgba(255,255,255,0.06)" strokeDasharray="4 4" />
+        <line x1="40" y1="140" x2="560" y2="140" stroke="rgba(255,255,255,0.06)" strokeDasharray="4 4" />
+        <line x1="40" y1="180" x2="560" y2="180" stroke="rgba(255,255,255,0.06)" strokeDasharray="4 4" />
+
+        <line x1="100" y1="10" x2="100" y2="190" stroke="rgba(255,255,255,0.06)" strokeDasharray="4 4" />
+        <line x1="250" y1="10" x2="250" y2="190" stroke="rgba(255,255,255,0.06)" strokeDasharray="4 4" />
+        <line x1="400" y1="10" x2="400" y2="190" stroke="rgba(255,255,255,0.06)" strokeDasharray="4 4" />
+
+        {/* Biased Population Light-Curve (Purple Line) */}
+        <motion.path
+          d="M 50 150 Q 150 145 200 60 T 350 160 T 550 155"
+          stroke="#7C3AED"
+          strokeWidth="2"
+          strokeDasharray="4 4"
+          fill="none"
+          initial={{ pathLength: 0 }}
+          animate={{ pathLength: 1 }}
+          transition={{ duration: 2, ease: 'easeInOut' }}
+        />
+
+        {/* True Population Light-Curve (Cyan Line) */}
+        <motion.path
+          d="M 50 150 Q 140 135 190 30 T 340 140 T 550 145"
+          stroke="#22D3EE"
+          strokeWidth="2.5"
+          fill="none"
+          initial={{ pathLength: 0 }}
+          animate={{ pathLength: 1 }}
+          transition={{ duration: 2.2, ease: 'easeInOut' }}
+        />
+
+        {/* Peak Transient Trigger Points */}
+        <circle cx="190" cy="30" r="5" fill="#22D3EE" className="shadow-[0_0_12px_#22D3EE]" />
+        <circle cx="200" cy="60" r="4" fill="#7C3AED" className="shadow-[0_0_12px_#7C3AED]" />
+
+        <text x="205" y="25" fill="#22D3EE" fontSize="10" fontFamily="monospace" letterSpacing="1">
+          TRUE PEAK (CALIBRATED)
+        </text>
+        <text x="215" y="70" fill="#7C3AED" fontSize="10" fontFamily="monospace" letterSpacing="1">
+          BIASED SAMPLE (OBSERVED)
+        </text>
+      </svg>
     </div>
   );
 }
