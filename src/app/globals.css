@@ -25,6 +25,7 @@
 
   --font-space: var(--font-space-grotesk), sans-serif;
   --font-inter: var(--font-inter-body), sans-serif;
+  --font-mono: var(--font-jetbrains-mono), monospace;
   
   --radius-hud: 2px;
 }
@@ -38,7 +39,6 @@ body {
   overflow-x: hidden;
 }
 
-/* Hide native cursor on pointer fine devices */
 @media (pointer: fine) {
   body, a, button, input {
     cursor: none !important;

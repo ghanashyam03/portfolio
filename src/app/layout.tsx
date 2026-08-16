@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Space_Grotesk, Inter } from 'next/font/google';
+import { Space_Grotesk, Inter, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import { StarfieldWrapper } from '@/components/three/StarfieldWrapper';
 import { Loader } from '@/components/ui/Loader';
@@ -20,6 +20,12 @@ const inter = Inter({
   variable: '--font-inter-body',
 });
 
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-jetbrains-mono',
+});
+
 export const metadata: Metadata = {
   title: 'Ghanashyam V Narayan | AI/ML & Computational Astrophysics',
   description:
@@ -32,7 +38,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${spaceGrotesk.variable} ${inter.variable}`}>
+    <html
+      lang="en"
+      className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable}`}
+    >
       <body className="bg-[#05060A] text-[#F5F7FF] antialiased selection:bg-[#7C3AED] selection:text-white">
         <Loader />
         <CustomCursor />

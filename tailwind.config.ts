@@ -21,6 +21,7 @@ const config: Config = {
       fontFamily: {
         space: ['var(--font-space-grotesk)', 'sans-serif'],
         inter: ['var(--font-inter-body)', 'sans-serif'],
+        mono: ['var(--font-jetbrains-mono)', 'monospace'],
       },
       borderRadius: {
         DEFAULT: '2px',
