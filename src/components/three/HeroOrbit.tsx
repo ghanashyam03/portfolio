@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
@@ -11,6 +11,7 @@ function OrbitRing({
   speed,
   color,
   planetSize,
+  isReducedMotion,
 }: {
   radius: number;
   tiltX: number;
@@ -18,12 +19,14 @@ function OrbitRing({
   speed: number;
   color: string;
   planetSize: number;
+  isReducedMotion: boolean;
 }) {
   const groupRef = useRef<THREE.Group>(null);
   const planetRef = useRef<THREE.Mesh>(null);
   const angleRef = useRef(Math.random() * Math.PI * 2);
 
   useFrame((_, delta) => {
+    if (isReducedMotion) return;
     angleRef.current += delta * speed;
     if (planetRef.current) {
       planetRef.current.position.x = Math.cos(angleRef.current) * radius;
@@ -58,8 +61,18 @@ function OrbitRing({
 
 function HeroOrbitContent() {
   const coreRef = useRef<THREE.Mesh>(null);
+  const [isReducedMotion, setIsReducedMotion] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    setIsReducedMotion(mediaQuery.matches);
+    const handler = (e: MediaQueryListEvent) => setIsReducedMotion(e.matches);
+    mediaQuery.addEventListener('change', handler);
+    return () => mediaQuery.removeEventListener('change', handler);
+  }, []);
 
   useFrame((_, delta) => {
+    if (isReducedMotion) return;
     if (coreRef.current) {
       coreRef.current.rotation.y += delta * 0.25;
       coreRef.current.rotation.x += delta * 0.1;
@@ -71,7 +84,7 @@ function HeroOrbitContent() {
       <ambientLight intensity={0.6} />
       <pointLight position={[0, 0, 0]} intensity={3} color="#22D3EE" />
 
-      {/* Central Glowing Emissive Plasma Cyan Core */}
+      {/* Central Glowing Emissive Core */}
       <mesh ref={coreRef}>
         <sphereGeometry args={[1.0, 32, 32]} />
         <meshStandardMaterial
@@ -96,6 +109,7 @@ function HeroOrbitContent() {
         speed={0.7}
         color="#22D3EE"
         planetSize={0.2}
+        isReducedMotion={isReducedMotion}
       />
 
       {/* Orbit Ring 2 - Nebula Purple */}
@@ -106,6 +120,7 @@ function HeroOrbitContent() {
         speed={0.45}
         color="#7C3AED"
         planetSize={0.26}
+        isReducedMotion={isReducedMotion}
       />
 
       {/* Orbit Ring 3 - Solar Orange */}
@@ -116,6 +131,7 @@ function HeroOrbitContent() {
         speed={0.3}
         color="#FB923C"
         planetSize={0.24}
+        isReducedMotion={isReducedMotion}
       />
     </group>
   );

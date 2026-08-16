@@ -1,8 +1,27 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
-import { Mail, Phone, Linkedin } from 'lucide-react';
+import { Mail, Phone } from 'lucide-react';
+
+function LinkedinIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      width="24"
+      height="24"
+      stroke="currentColor"
+      strokeWidth="2"
+      fill="none"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+      <rect x="2" y="9" width="4" height="12" />
+      <circle cx="4" cy="4" r="2" />
+    </svg>
+  );
+}
 
 function GithubIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -61,7 +80,7 @@ export function Footer() {
             aria-label="LinkedIn profile"
             className="p-2 rounded-[2px] border-hud text-[#8B93B0] hover:text-[#22D3EE] hover:border-[#22D3EE]/50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#22D3EE]"
           >
-            <Linkedin className="w-4 h-4" />
+            <LinkedinIcon className="w-4 h-4" />
           </a>
           <a
             href="https://github.com/ghanashyam03/"

@@ -2,9 +2,29 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Mail, Phone, Linkedin, Send, MessageSquare } from 'lucide-react';
+import { Mail, Phone, Send, MessageSquare } from 'lucide-react';
 
 /* NOTE: If real backend form submission is desired later, wire this to Resend, Formspree, or a Next.js API route with an email provider */
+
+function LinkedinIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      width="24"
+      height="24"
+      stroke="currentColor"
+      strokeWidth="2"
+      fill="none"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+      <rect x="2" y="9" width="4" height="12" />
+      <circle cx="4" cy="4" r="2" />
+    </svg>
+  );
+}
 
 function GithubIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -119,7 +139,7 @@ export default function ContactPage() {
               {/* LinkedIn */}
               <div className="flex items-start gap-4">
                 <div className="p-2.5 rounded-[2px] bg-[#05060A] border-hud text-[#22D3EE] shrink-0">
-                  <Linkedin className="w-4 h-4" />
+                  <LinkedinIcon className="w-4 h-4" />
                 </div>
                 <div>
                   <span className="font-mono text-xs text-[#8B93B0] uppercase block mb-1">
