@@ -11,19 +11,19 @@ import { Footer } from '@/components/layout/Footer';
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
+  display: 'swap',
   variable: '--font-space-grotesk',
 });
 
 const inter = Inter({
   subsets: ['latin'],
-  weight: ['400', '500'],
+  display: 'swap',
   variable: '--font-inter-body',
 });
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
+  display: 'swap',
   variable: '--font-jetbrains-mono',
 });
 
