@@ -38,18 +38,24 @@ body {
   overflow-x: hidden;
 }
 
+/* Hide native cursor on pointer fine devices */
+@media (pointer: fine) {
+  body, a, button, input {
+    cursor: none !important;
+  }
+}
+
 .border-hud {
   border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
-.hud-panel {
+.hud-card {
   background-color: rgba(11, 14, 26, 0.7);
   backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 2px;
 }
 
-/* Custom minimal scrollbar */
 ::-webkit-scrollbar {
   width: 5px;
 }

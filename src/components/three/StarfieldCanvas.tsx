@@ -4,10 +4,14 @@ import React, { useRef, useMemo, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { WireframePlanet } from './WireframePlanet';
+import { useUIStore } from '@/store/useUIStore';
 
 function TwinklingStarfield({ count = 6000 }: { count?: number }) {
   const pointsRef = useRef<THREE.Points>(null);
   const materialRef = useRef<THREE.ShaderMaterial>(null);
+  const isWarping = useUIStore((state) => state.isWarping);
+
+  const warpFactor = useRef(0);
 
   // Generate random positions, seeds, and sizes in a large sphere
   const [positions, seeds, sizes] = useMemo(() => {
@@ -35,6 +39,7 @@ function TwinklingStarfield({ count = 6000 }: { count?: number }) {
   const uniforms = useMemo(
     () => ({
       uTime: { value: 0 },
+      uWarp: { value: 0 },
       uColor: { value: new THREE.Color('#F5F7FF') },
       uCyan: { value: new THREE.Color('#22D3EE') },
     }),
@@ -43,19 +48,29 @@ function TwinklingStarfield({ count = 6000 }: { count?: number }) {
 
   const vertexShader = `
     uniform float uTime;
+    uniform float uWarp;
     attribute float aSeed;
     attribute float aSize;
     varying float vAlpha;
+    varying float vWarp;
 
     void main() {
-      vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+      vec3 pos = position;
+      
+      // Radial z-streak displacement during warp
+      pos.z += uWarp * (sin(aSeed) * 8.0);
+      
+      vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
       gl_Position = projectionMatrix * mvPosition;
       
-      // Twinkle point size sine wave keyed to time + seed
       float twinkle = sin(uTime * 1.5 + aSeed) * 0.5 + 0.5;
-      gl_PointSize = aSize * (0.7 + 0.6 * twinkle) * (300.0 / -mvPosition.z);
+      float baseSize = aSize * (0.7 + 0.6 * twinkle);
       
-      vAlpha = 0.35 + 0.65 * twinkle;
+      // Expand point size into streak effect on warp
+      gl_PointSize = (baseSize + uWarp * 4.5) * (300.0 / -mvPosition.z);
+      
+      vAlpha = 0.35 + 0.65 * twinkle + uWarp * 0.4;
+      vWarp = uWarp;
     }
   `;
 
@@ -63,21 +78,30 @@ function TwinklingStarfield({ count = 6000 }: { count?: number }) {
     uniform vec3 uColor;
     uniform vec3 uCyan;
     varying float vAlpha;
+    varying float vWarp;
 
     void main() {
       float dist = length(gl_PointCoord - vec2(0.5));
       if (dist > 0.5) discard;
       
       float alpha = (1.0 - smoothstep(0.08, 0.5, dist)) * vAlpha;
-      vec3 col = mix(uCyan, uColor, smoothstep(0.0, 0.35, dist));
       
-      gl_FragColor = vec4(col, alpha);
+      // Shift color more toward plasma cyan during warp
+      vec3 starColor = mix(uCyan, uColor, smoothstep(0.0, 0.35, dist));
+      vec3 finalCol = mix(starColor, uCyan, vWarp * 0.7);
+      
+      gl_FragColor = vec4(finalCol, alpha);
     }
   `;
 
   useFrame((_, delta) => {
+    // Lerp warp factor
+    const targetWarp = isWarping ? 1.0 : 0.0;
+    warpFactor.current += (targetWarp - warpFactor.current) * delta * 8.0;
+
     if (materialRef.current) {
-      materialRef.current.uniforms.uTime.value += delta;
+      materialRef.current.uniforms.uTime.value += delta * (1.0 + warpFactor.current * 3.0);
+      materialRef.current.uniforms.uWarp.value = warpFactor.current;
     }
   });
 
@@ -126,7 +150,6 @@ function SceneContent() {
 
   useFrame((_, delta) => {
     const m = mouseRef.current;
-    // Damped lerp toward target cursor position
     m.x += (m.targetX - m.x) * delta * 2.5;
     m.y += (m.targetY - m.y) * delta * 2.5;
 

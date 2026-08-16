@@ -3,7 +3,10 @@ import { Space_Grotesk, Inter } from 'next/font/google';
 import './globals.css';
 import { StarfieldWrapper } from '@/components/three/StarfieldWrapper';
 import { Loader } from '@/components/ui/Loader';
-import { PageWrapper } from '@/components/layout/PageWrapper';
+import { Wordmark } from '@/components/ui/Wordmark';
+import { OrbitalNav } from '@/components/ui/OrbitalNav';
+import { CustomCursor } from '@/components/ui/CustomCursor';
+import { PageTransition } from '@/components/layout/PageTransition';
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
@@ -32,8 +35,11 @@ export default function RootLayout({
     <html lang="en" className={`${spaceGrotesk.variable} ${inter.variable}`}>
       <body className="bg-[#05060A] text-[#F5F7FF] antialiased selection:bg-[#7C3AED] selection:text-white">
         <Loader />
+        <CustomCursor />
+        <Wordmark />
+        <OrbitalNav />
         <StarfieldWrapper />
-        <PageWrapper>{children}</PageWrapper>
+        <PageTransition>{children}</PageTransition>
       </body>
     </html>
   );
